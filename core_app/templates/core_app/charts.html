@@ -1,0 +1,134 @@
+<html>
+  {%load static%}
+
+  <head>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js"></script>
+    <link
+      href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
+    <title>Account</title>
+
+    <!-- fontawesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- hover.css -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css"
+      integrity="sha512-csw0Ma4oXCAgd/d4nTcpoEoz4nYvvnk21a8VA2h2dzhPAvjbUIK6V3si7/g/HehwdunqqW18RwCJKpD7rL67Xg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- bootstrap icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+
+    <!-- Include the flag-icon-css library for flag icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css"
+    />
+    <style>
+      .language-dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .flag-icon {
+        margin-right: 10px;
+      }
+    </style>
+
+    <!-- bootstrap css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin: 10px">
+      <button type="submit" class="btn btn-primary">
+        <a href="{% url 'get_data' %}" style="color: white">GET NEW DATA</a>
+      </button>
+
+      <ul>
+        <li class="nav-link"><a href="{% url 'index' %}">Home</a></li>
+      </ul>
+    </nav>
+    <div id="container"></div>
+
+    <script>
+      anychart.onDocumentReady(function () {
+        // create column chart
+        var chart = anychart.column();
+
+        // turn on chart animation
+        chart.animation(true);
+
+        // set chart title text settings
+        chart.title("Number of Jobs");
+
+        // create area series with passed data
+        var series = chart.column([
+            {% for job in number_of_jobs%}
+            ["{{job.date}}", "{{job.number}}"]
+            {%endfor%}
+        ]);
+
+        // set series tooltip settings
+        series.tooltip().titleFormat("{%X}");
+
+        series
+          .tooltip()
+          .position("center-top")
+          .anchor("center-bottom")
+          .offsetX(0)
+          .offsetY(5)
+          .format("Number of Jobs: {%Value}{groupsSeparator: }");
+
+        // set scale minimum
+        chart.yScale().minimum(0);
+
+        // set yAxis labels formatter
+        chart.yAxis().labels().format("{%Value}{groupsSeparator: }");
+
+        // tooltips position and interactivity settings
+        chart.tooltip().positionMode("point");
+        chart.interactivity().hoverMode("by-x");
+
+        // axes titles
+        chart.xAxis().title("Date");
+        chart.yAxis().title("Number of Jobs");
+
+        // set container id for the chart
+        chart.container("container");
+
+        // initiate chart drawing
+        chart.draw();
+      });
+    </script>
+  </body>
+</html>
