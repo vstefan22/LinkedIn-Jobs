@@ -1,14 +1,15 @@
 import requests
 from datetime import datetime
 import pytz
-from .models import LinedInJob,  NumberOfJobs
+from .models import LinedInJob,  NumberOfJobs, ApiKeys
 import time
 
 
 def get_data(name, location):
     LINKED_IN_JOBS_URL = "https://linkedin-jobs-search.p.rapidapi.com/"
     LINKEDIN_COMPANY_INFORMATION_URL = "https://linkedin-profiles-and-company-data.p.rapidapi.com/profile-details"
-
+    company_api = ApiKeys.objects.filter(api = 'company')
+    jobs_api = ApiKeys.objects.filter(api = 'jobs')
     payload = {
         "search_terms": f"{name}",
         "location": f"{location}",
@@ -16,7 +17,7 @@ def get_data(name, location):
     }
     headers = {
         "content-type": "application/json",
-        'X-RapidAPI-Key': '9c57161c68msh3a4d57d87da1d0bp19a0b1jsn546d336afe57',
+        'X-RapidAPI-Key': f'{jobs_api}',
         "X-RapidAPI-Host": "linkedin-jobs-search.p.rapidapi.com"
     }
 
@@ -47,7 +48,7 @@ def get_data(name, location):
         }
         headers = {
             "content-type": "application/json",
-            "X-RapidAPI-Key": "669e2822cemsh33b3f661800bcd5p129bcajsn697ae911bb39",
+            "X-RapidAPI-Key": f"{company_api}",
             "X-RapidAPI-Host": "linkedin-profiles-and-company-data.p.rapidapi.com"
         }
 

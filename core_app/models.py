@@ -25,3 +25,7 @@ class NumberOfJobs(models.Model):
     def __str__(self):
         return f'Number of jobs: {self.number} | Date: {self.date}'
     
+class ApiKeys(models.Model):
+    api_key = models.CharField(max_length=500,null = True)
+    api = models.CharField(max_length=200,null = True)
+    
