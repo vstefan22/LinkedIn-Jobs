@@ -5,6 +5,7 @@ from datetime import datetime
 from django.contrib import messages
 import pytz
 import csv
+import requests
 
 # Create your views here.
 def index(request):
@@ -70,3 +71,22 @@ def change_api(request):
         else:   
             messages.error(request,"Invalid input! Only select 2 options (company or jobs)")
     return render(request, 'core_app/change_api_key.html')
+
+
+def change_email(request, company_name):
+    print(company_name)
+    name = LinedInJob.objects.filter(company_name = company_name)
+    
+    if request.method == 'POST':
+        nameGot = request.POST.get('name')
+        email = request.POST.get('email')
+        print(nameGot, email)
+        print('\n')
+        print(name)
+        if name != nameGot:
+            name = LinedInJob.objects.filter(company_name = nameGot)
+        print(name)
+        name.update(email = email)
+
+    context = {'name':company_name}
+    return render(request, 'core_app/change-email.html', context)

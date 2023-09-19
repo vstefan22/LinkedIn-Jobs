@@ -7,4 +7,5 @@ urlpatterns = [
     path('get-data/', views.get_data_view, name = 'get_data'),
     path('save-table/', views.save_table, name = 'save_table'),
     path('change-api/', views.change_api, name = 'change_api'),
+    path('change-email/<str:company_name>/', views.change_email, name = 'change_email'),
 ]

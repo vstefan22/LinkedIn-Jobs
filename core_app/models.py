@@ -15,6 +15,7 @@ class LinedInJob(models.Model):
     found_date = models.CharField(max_length=200, null = True)
     phone = models.CharField(max_length=200, null = True)
     date_we_got_data = models.DateField(blank=True, null = True)
+    email = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f'{self.job_title} {self.date_we_got_data}'

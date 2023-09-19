@@ -52,7 +52,16 @@
           <td>{{job.job_location}}</td>
           <td>{{job.posted_date}}</td>
           <td>{{job.company_name}}</td>
-          <td>{{job.company_url}}</td>
+          <td>
+            <a
+              href="{{job.company_url}}"
+              target="_blank"
+              id="company_url"
+              data-url="{{job.company_url}}"
+              data-name="{{job.company_name}}"
+              >{{job.company_url}}</a
+            >
+          </td>
           <td>{{job.job_location}}</td>
           <td>{{job.country}}</td>
           <td>{{job.postal_code}}</td>
@@ -63,5 +72,17 @@
         {%endfor%}
       </tbody>
     </table>
+    <script>
+      const urls = document.querySelectorAll("#company_url");
+      urls.forEach((url) => {
+        url.addEventListener("click", function (e) {
+          e.preventDefault();
+          const urlCompany = e.target.dataset.url;
+          const companyName = e.target.dataset.name;
+          window.open(urlCompany);
+          window.open(`http://127.0.0.1:10000/change-email/${companyName}/`);
+        });
+      });
+    </script>
   </body>
 </html>
