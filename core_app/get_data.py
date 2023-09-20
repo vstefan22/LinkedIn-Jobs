@@ -68,6 +68,7 @@ def get_data(name, location):
                             headquarter_country = company_data['details']['locations']['headquarter']['country']
                             headquarter_city = company_data['details']['locations']['headquarter']['city']
                             headquarter_postal_code = company_data['details']['locations']['headquarter']['postal_code']
+                            number_of_employees = company_data['details']['staff']['total']
                             
                             try:
                                 founded_date = company_data['details']['founded']['year']
@@ -88,12 +89,13 @@ def get_data(name, location):
                             context[f'Industries {count}'] = company_industries
                             context[f'Founded Date {count}'] = founded_date
                             context[f'Phone {count}'] = phone
+                            context[f'Number of employees'] = number_of_employees
                             today = datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
                             LinedInJob.objects.create(job_url = job_url, company_name = company_name, company_url = company_url, job_title = job_title,
                                                     job_location = job_location, posted_date = posted_date,
                                                         headquarter = company_headquarter, city = headquarter_city, 
                                                         country = headquarter_country, postal_code = headquarter_postal_code,
-                                                        phone = phone, found_date = founded_date, industries = company_industries, date_we_got_data = today)
+                                                        phone = phone, found_date = founded_date, industries = company_industries, date_we_got_data = today, number_of_employees = number_of_employees)
                             check = NumberOfJobs.objects.filter(date = today)
                             if check:
                                 number_of_jobs = check[0].number + 1
@@ -142,7 +144,7 @@ def get_data(name, location):
                                                         job_location = job_location, posted_date = posted_date,
                                                             headquarter = company_headquarter, city = headquarter_city, 
                                                             country = headquarter_country, postal_code = headquarter_postal_code,
-                                                            phone = phone, found_date = founded_date, industries = company_industries, date_we_got_data = today)
+                                                            phone = phone, found_date = founded_date, industries = company_industries, date_we_got_data = today, number_of_employees = number_of_employees)
                                 check = NumberOfJobs.objects.filter(date = today)
                                 if check:
                                     number_of_jobs = check[0].number + 1

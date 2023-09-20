@@ -6,6 +6,7 @@ from django.contrib import messages
 import pytz
 import csv
 import requests
+import dateutil.parser
 
 # Create your views here.
 def index(request):
@@ -33,7 +34,7 @@ def get_data_view(request):
     return render(request, 'core_app/get_data.html')
 
 def create_csv(date, job_url, job_title, company_name, company_url, job_location, posted_date, found_date, headquarter, city, postal_code, industries, phone, date_we_got_data):
-    print('da')
+    print(date)
     with open(f"{date}.csv", "a") as my_empty_csv:
         # print(empt_list)
         writer = csv.writer(my_empty_csv)
@@ -44,17 +45,19 @@ def create_csv(date, job_url, job_title, company_name, company_url, job_location
         writer.writerow(data)
 def save_table(request):
     if request.method == 'POST':
-        date = request.POST.get('date')
+        date_pass = request.POST.get('date')
+        date = dateutil.parser.parse(date_pass).strftime("%Y-%m-%d")
         empt_list = []
+        
         if date == 'all':
             jobs = LinedInJob.objects.all()
             for job in jobs:
-                create_csv(date, job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data)
+                create_csv(date_pass, job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data, job.number_of_employees)
         else:
             jobs = LinedInJob.objects.filter(date_we_got_data = date)
             for job in jobs:
                 empt_list.append([job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data])
-                create_csv(date, job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data)
+                create_csv(date_pass, job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data, job.number_of_employees)
         pass
         
     return render(request, 'core_app/save_table.html')
