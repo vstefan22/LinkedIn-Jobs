@@ -67,10 +67,14 @@ def change_api(request):
     if request.method == 'POST':
         api_key = request.POST.get('api_key')
         api_type = request.POST.get('api_type')
+        
         if api_type == 'company':
-            ApiKeys.objects.filter(api_type = 'company').update(api_key = api_key)
+            ApiKeys.objects.filter(api_type = 'company').delete()
+            ApiKeys.objects.create(api_type = 'company', api_key = api_key)
         elif api_type == 'jobs':
-            ApiKeys.objects.filter(api_type = 'jobs').update(api_key = api_key)
+            ApiKeys.objects.filter(api_type = 'jobs').delete()
+            ApiKeys.objects.create(api_type = 'jobs', api_key = api_key)
+
         else:   
             messages.error(request,"Invalid input! Only select 2 options (company or jobs)")
     return render(request, 'core_app/change_api_key.html')
