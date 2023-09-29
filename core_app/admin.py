@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import LinedInJob, NumberOfJobs, ApiKeys
+from .models import LinkedInJob, NumberOfJobs, ApiKeys
 
-admin.site.register(LinedInJob)
+admin.site.register( LinkedInJob)
 admin.site.register(NumberOfJobs)
 admin.site.register(ApiKeys)
 

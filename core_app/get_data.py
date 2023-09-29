@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 import pytz
-from .models import LinedInJob,  NumberOfJobs, ApiKeys
+from .models import  LinkedInJob,  NumberOfJobs, ApiKeys
 import time
 
 
@@ -22,10 +22,11 @@ def get_data(name, location):
     }
 
     response = requests.post(LINKED_IN_JOBS_URL, json=payload, headers=headers)
-
+    print('RESPONSE', response)
     jobs = response.json()
-    count = 0
+    count = 0   
     context = {}
+    print('JOBS', jobs)
     for job in jobs:
         count += 1
         
@@ -91,7 +92,7 @@ def get_data(name, location):
                             context[f'Phone {count}'] = phone
                             context[f'Number of employees'] = number_of_employees
                             today = datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
-                            LinedInJob.objects.create(job_url = job_url, company_name = company_name, company_url = company_url, job_title = job_title,
+                            LinkedInJob.objects.create(job_url = job_url, company_name = company_name, company_url = company_url, job_title = job_title,
                                                     job_location = job_location, posted_date = posted_date,
                                                         headquarter = company_headquarter, city = headquarter_city, 
                                                         country = headquarter_country, postal_code = headquarter_postal_code,
@@ -140,7 +141,7 @@ def get_data(name, location):
                                 context[f'Founded Date {count}'] = founded_date
                                 context[f'Phone {count}'] = phone
                                 today = datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
-                                LinedInJob.objects.create(job_url = job_url, company_name = company_name, company_url = company_url, job_title = job_title,
+                                LinkedInJob.objects.create(job_url = job_url, company_name = company_name, company_url = company_url, job_title = job_title,
                                                         job_location = job_location, posted_date = posted_date,
                                                             headquarter = company_headquarter, city = headquarter_city, 
                                                             country = headquarter_country, postal_code = headquarter_postal_code,

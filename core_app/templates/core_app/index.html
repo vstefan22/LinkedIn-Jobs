@@ -1,91 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-  </head>
-  <body style="margin: 10px">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <button type="submit" class="btn btn-primary">
-        <a href="{% url 'get_data' %}" style="color: white">GET NEW DATA</a>
-      </button>
-      <button type="submit" class="btn btn-primary m-3">
-        <a href="{% url 'save_table' %}" style="color: white">Save Table</a>
-      </button>
+{% extends 'core_app/base.html' %} {%block content%} {%load static %}
+<head>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+</head>
+<!--Screener filter drop down menu-->
+<form action="" method="post">
+  {%csrf_token%}
+  <button
+    type="button"
+    class="btn btn-primary m-3"
+    data-bs-toggle="modal"
+    data-bs-target="#staticBackdrop"
+  >
+    <i class="fa fa-filter fa-2x" aria-hidden="true"></i>
+  </button>
 
-      <ul>
-        <li class="nav-link"><a href="{% url 'charts' %}">Charts</a></li>
-        <li class="nav-link"><a href="{% url 'change_api' %}">Change API</a></li>
-      </ul>
-    </nav>
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="staticBackdrop"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title h2" id="staticBackdropLabel">Search</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Job Url</th>
-          <th scope="col">Job Title</th>
-          <th scope="col">Job Location</th>
-          <th scope="col">Posted Date</th>
-          <th scope="col">Company Name</th>
-          <th scope="col">Company URL</th>
-          <th scope="col">Country</th>
-          <th scope="col">City</th>
-          <th scope="col">Postal Code</th>
-          <th scope="col">industries</th>
-          <th scope="col">Founded Date</th>
-          <th scope="col">Phone Number</th>
-          <th scope="col">Number Of Employees</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for job in get_jobs%}
-        <tr>
-          <th scope="row">{{ forloop.counter }}</th>
-          <td>{{job.job_url}}</td>
-          <td>{{job.job_title}}</td>
-          <td>{{job.job_location}}</td>
-          <td>{{job.posted_date}}</td>
-          <td>{{job.company_name}}</td>
-          <td>
-            <a
-              href="{{job.company_url}}"
-              target="_blank"
-              id="company_url"
-              data-url="{{job.company_url}}"
-              data-name="{{job.company_name}}"
-              >{{job.company_url}}</a
-            >
-          </td>
-          <td>{{job.job_location}}</td>
-          <td>{{job.country}}</td>
-          <td>{{job.postal_code}}</td>
-          <td>{{job.industries}}</td>
-          <td>{{job.found_date}}</td>
-          <td>{{job.phone}}</td>
-          <td>{{job.number_of_employees}}</td>
-        </tr>
-        {%endfor%}
-      </tbody>
-    </table>
-    <script>
-      const urls = document.querySelectorAll("#company_url");
-      urls.forEach((url) => {
-        url.addEventListener("click", function (e) {
-          e.preventDefault();
-          const urlCompany = e.target.dataset.url;
-          const companyName = e.target.dataset.name;
-          window.open(urlCompany);
-          window.open(`http://127.0.0.1:10000/change-email/${companyName}/`);
-        });
-      });
-    </script>
-  </body>
-</html>
+        <div class="modal-body">
+          <p><span style="color: orange">Info:</span> all fields are optional</p>
+          <div class="mb-3">
+            <label for="city" class="form-label">Job Location (City):</label>
+            <input type="text" class="form-control" id="city" name="city" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="country">Job Location (Country):</label>
+            <input type="text" class="form-control" id="country" name="country" />
+          </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">Job Title:</label>
+            <input type="text" class="form-control" id="title" name="title" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="date">Date Posted:</label>
+            <input type="date" class="form-control" id="date" name="date" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="reset" class="btn btn-danger">Reset</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Job URL</th>
+      <th scope="col">Job Title</th>
+      <th scope="col">Job Location</th>
+      <th scope="col">Posted Date</th>
+      <th scope="col">Company Name</th>
+      <th scope="col">Company URL</th>
+      <th scope="col">Country</th>
+      <th scope="col">Postal Code</th>
+      <th scope="col">Industry</th>
+      <th scope="col">Founded Date</th>
+      <th scope="col">Phone Number</th>
+      <th scope="col">Number Of Employees</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for job in get_jobs%}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td><a href="{{job.company_url}}" target="_blank">{{job.job_url}}</a></td>
+      <td>{{job.job_title}}</td>
+      <td>{{job.job_location}}</td>
+      <td>{{job.posted_date}}</td>
+      <td>{{job.company_name}}</td>
+      <td>
+        <a
+          href="{{job.company_url}}"
+          target="_blank"
+          id="company_url"
+          data-url="{{job.company_url}}"
+          data-name="{{job.company_name}}"
+          >{{job.company_url}}</a
+        >
+      </td>
+      <td>{{job.job_location}}</td>
+      <td>{{job.postal_code}}</td>
+      <td>{{job.industries}}</td>
+      <td>{{job.found_date}}</td>
+      <td>{{job.phone}}</td>
+      <td>{{job.number_of_employees}}</td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+<script>
+  const urls = document.querySelectorAll("#company_url");
+  urls.forEach((url) => {
+    url.addEventListener("click", function (e) {
+      e.preventDefault();
+      const urlCompany = e.target.dataset.url;
+      const companyName = e.target.dataset.name;
+      window.open(urlCompany);
+      window.open(`http://127.0.0.1:10000/change-email/${companyName}/`);
+    });
+  });
+</script>
+{%endblock%}

@@ -1,6 +1,6 @@
 from django.db import models
 
-class LinedInJob(models.Model):
+class  LinkedInJob(models.Model):
     job_url = models.CharField(max_length=200,null = True)
     job_title = models.CharField(max_length=200, null = True)
     company_name = models.CharField(max_length=200, null = True)

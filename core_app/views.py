@@ -1,16 +1,32 @@
 from django.shortcuts import render
-from .models import LinedInJob, NumberOfJobs, ApiKeys
-from .get_data import get_data
-from datetime import datetime
 from django.contrib import messages
-import pytz
-import csv
-import requests
-import dateutil.parser
+from django.db.models import Q
+import dateutil.parser, csv
+from .models import  LinkedInJob, NumberOfJobs, ApiKeys
+from .get_data import get_data
 
 # Create your views here.
 def index(request):
-    get_jobs = LinedInJob.objects.all()
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        city = request.POST.get('city').lower()
+        country = request.POST.get('country')
+        title = request.POST.get('title')
+        for i in LinkedInJob.objects.all():
+            industries1 = i.industries.replace("['", '')
+            industries2 = industries1.replace("']", '')
+            LinkedInJob.objects.filter(job_url = i.job_url).update(industries = industries2)
+        if title and city:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title__contains = title) | Q(job_location__contains = city) | Q(country = country))
+        if title and not city:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title__contains = title) | Q(job_location = city) | Q(country = country))
+        if not title and city:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title = title) | Q(job_location__contains = city) | Q(country = country))
+        if not title and not city:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(country = country))
+        context = {'get_jobs': results}
+        return render(request, 'core_app/index.html', context)
+    get_jobs =  LinkedInJob.objects.all()
     context = {'get_jobs':get_jobs}
     return render(request, 'core_app/index.html', context)
 
@@ -23,40 +39,35 @@ def charts(request):
 
 def get_data_view(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        location = request.POST.get('location')
-        name = name.lower()
-        location = location.lower()
+        name = request.POST.get('name').lower()
+        location = request.POST.get('location').lower()
         get_data(name, location)
-        get_jobs = LinedInJob.objects.all()
+        get_jobs =  LinkedInJob.objects.all()
         context = {'get_jobs':get_jobs}
         return render(request, 'core_app/index.html', context)
     return render(request, 'core_app/get_data.html')
 
 def create_csv(date, job_url, job_title, company_name, company_url, job_location, posted_date, found_date, headquarter, city, postal_code, industries, phone, date_we_got_data):
-    print(date)
     with open(f"{date}.csv", "a") as my_empty_csv:
         # print(empt_list)
         writer = csv.writer(my_empty_csv)
         header = ['Job URL', 'Job Title', 'Company Name', 'Company URL', 'Job Location', 'Posted Date', 'Founded Date', 'Headquarter', 'City', 'Postal Code', 'Industries', 'Phone', 'Date We Got Data']
         data = [job_url, job_title, company_name, company_url, job_location, posted_date, found_date, headquarter, city, postal_code, industries, phone, date_we_got_data]
-        
         writer.writerow(header)
         writer.writerow(data)
+
 def save_table(request):
     if request.method == 'POST':
         date_pass = request.POST.get('date')
         date = dateutil.parser.parse(date_pass).strftime("%Y-%m-%d")
-        empt_list = []
         
         if date == 'all':
-            jobs = LinedInJob.objects.all()
+            jobs =  LinkedInJob.objects.all()
             for job in jobs:
                 create_csv(date_pass, job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data, job.number_of_employees)
         else:
-            jobs = LinedInJob.objects.filter(date_we_got_data = date)
+            jobs =  LinkedInJob.objects.filter(date_we_got_data = date)
             for job in jobs:
-                empt_list.append([job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data])
                 create_csv(date_pass, job.job_url, job.job_title, job.company_name, job.company_url, job.job_location, job.posted_date, job.found_date, job.headquarter, job.city, job.postal_code, job.industries, job.phone, job.date_we_got_data, job.number_of_employees)
         pass
         
@@ -66,33 +77,24 @@ def save_table(request):
 def change_api(request):
     if request.method == 'POST':
         api_key = request.POST.get('api_key')
-        api_type = request.POST.get('api_type')
+        api_type = request.POST.get('api_type').lower()
         
-        if api_type == 'company':
-            ApiKeys.objects.filter(api = 'company').delete()
-            ApiKeys.objects.create(api = 'company', api_key = api_key)
-        elif api_type == 'jobs':
-            ApiKeys.objects.filter(api = 'jobs').delete()
-            ApiKeys.objects.create(api = 'jobs', api_key = api_key)
-
-        else:   
+        try:
+            ApiKeys.objects.filter(api = api_type).delete()
+            ApiKeys.objects.create(api = api_type, api_key = api_key)
+        except:   
             messages.error(request,"Invalid input! Only select 2 options (company or jobs)")
     return render(request, 'core_app/change_api_key.html')
 
 
 def change_email(request, company_name):
-    print(company_name)
-    name = LinedInJob.objects.filter(company_name = company_name)
+    name =  LinkedInJob.objects.filter(company_name = company_name)
     
     if request.method == 'POST':
         nameGot = request.POST.get('name')
         email = request.POST.get('email')
-        print(nameGot, email)
-        print('\n')
-        print(name)
         if name != nameGot:
-            name = LinedInJob.objects.filter(company_name = nameGot)
-        print(name)
+            name =  LinkedInJob.objects.filter(company_name = nameGot)
         name.update(email = email)
 
     context = {'name':company_name}
