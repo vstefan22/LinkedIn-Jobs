@@ -1,6 +1,28 @@
 {% extends 'core_app/base.html' %} {%block content%} {%load static %}
 <head>
   <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+  <script
+    src="https://code.jquery.com/jquery-3.6.3.slim.min.js"
+    integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo="
+    crossorigin="anonymous"
+  ></script>
+
+  <!--Datatables-->
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.css"
+  />
+  <script
+    type="text/javascript"
+    charset="utf8"
+    src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"
+  ></script>
+  <script
+    type="text/javascript"
+    charset="utf8"
+    src="https://cdn.datatables.net/plug-ins/1.13.2/sorting/natural.js"
+  ></script>
 </head>
 <!--Screener filter drop down menu-->
 <form action="" method="post">
@@ -64,7 +86,7 @@
     </div>
   </div>
 </form>
-<table class="table">
+<table id="myTable" class="display dark">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -85,9 +107,9 @@
   <tbody>
     {% for job in get_jobs%}
     <tr>
-      <th scope="row">{{ forloop.counter }}</th>
+      <td scope="row">{{ forloop.counter }}</td>
       <td><a href="{{job.company_url}}" target="_blank">{{job.job_url}}</a></td>
-      <td>{{job.job_title}}</td>
+      <td style="width: 100%">{{job.job_title}}</td>
       <td>{{job.job_location}}</td>
       <td>{{job.posted_date}}</td>
       <td>{{job.company_name}}</td>
@@ -123,4 +145,5 @@
     });
   });
 </script>
+<script src="{% static 'js/index.js' %}"></script>
 {%endblock%}
