@@ -7,15 +7,12 @@ from .get_data import get_data
 
 # Create your views here.
 def index(request):
-    
-    company_api = ApiKeys.objects.filter(api = 'company')[0].api_key
-    print(company_api)
     if request.method == 'POST':
         date = request.POST.get('date')
         city = request.POST.get('city').lower()
-        country = request.POST.get('country')
+        country = request.POST.get('country').upper()
         title = request.POST.get('title')
-        
+
         if title and city and country:
             results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title__contains = title) | Q(job_location__contains = city) | Q(country__contains = country))
         if title and not city and not country:
@@ -26,6 +23,10 @@ def index(request):
             results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(country__contains = country))
         if not title and not city and not country:
             results = LinkedInJob.objects.filter(Q(posted_date = date))
+        if not title and city and not country:
+            results = LinkedInJob.objects.filter(Q(job_location__contains = city))
+        if not date and country:
+            results = LinkedInJob.objects.filter(Q(country__contains = country))
         context = {'get_jobs': results}
         return render(request, 'core_app/index.html', context)
     get_jobs =  LinkedInJob.objects.all()
