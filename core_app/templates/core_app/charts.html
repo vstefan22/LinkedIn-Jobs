@@ -61,15 +61,6 @@
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin: 10px">
-      <button type="submit" class="btn btn-primary">
-        <a href="{% url 'get_data' %}" style="color: white">GET NEW DATA</a>
-      </button>
-
-      <ul>
-        <li class="nav-link"><a href="{% url 'index' %}">Home</a></li>
-      </ul>
-    </nav>
     <div id="container"></div>
 
     <script>
@@ -82,14 +73,24 @@
 
         // set chart title text settings
         chart.title("Number of Jobs");
+        const dataJobs = [];
+        {%for j in number_of_jobs%}
+          dataJobs.push([new Date("{{j.date}}"), "{{j.number}}"])
+        {%endfor%}
 
-        // create area series with passed data
-        var series = chart.column([
-            {% for job in number_of_jobs%}
-            ["{{job.date}}", "{{job.number}}"]
-            {%endfor%}
-        ]);
-
+        // currentDate = new Date("2023-03-12");
+        // // currentDate = {{job.date_we_got_dataJobs}};
+        // formatDate = new Date(
+        //   currentDate.getFullYear(),
+        //   currentDate.getMonth(),
+        //   currentDate.getDate() + 1
+        // )
+        //   .toISOString()
+        //   .slice(0, 10);
+        // console.log(formatDate);
+        // create area series with passed dataJobs
+        var series = chart.column(dataJobs);
+        console.log("ad", dataJobs);
         // set series tooltip settings
         series.tooltip().titleFormat("{%X}");
 

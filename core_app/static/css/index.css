@@ -9,7 +9,13 @@ a:hover {
 table {
   width: 100%;
 }
-
+body {
+  background-color: #05293a;
+}
+form {
+  border-top: 5px solid #07364c;
+  margin: 0 20px 0 20px;
+}
 td {
   max-width: 100%;
   white-space: nowrap;
@@ -17,6 +23,7 @@ td {
 }
 
 .dataTables_wrapper {
+  width: 100%;
   background-color: #05293a;
   color: white;
   padding-left: 10px;
@@ -53,6 +60,7 @@ tr:hover {
 #myTable_wrapper {
   padding: 5px;
   border: 15px solid #041f2b;
+  overflow-x: auto;
 }
 #border-c {
   border-top: 15px solid #041f2b;
