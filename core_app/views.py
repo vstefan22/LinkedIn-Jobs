@@ -16,14 +16,16 @@ def index(request):
         country = request.POST.get('country')
         title = request.POST.get('title')
         
-        if title and city:
-            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title__contains = title) | Q(job_location__contains = city) | Q(country = country))
-        if title and not city:
+        if title and city and country:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title__contains = title) | Q(job_location__contains = city) | Q(country__contains = country))
+        if title and not city and not country:
             results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title__contains = title) | Q(job_location = city) | Q(country = country))
-        if not title and city:
-            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title = title) | Q(job_location__contains = city) | Q(country = country))
-        if not title and not city:
-            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(country = country))
+        if not title and city and country:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(job_title = title) | Q(job_location__contains = city) | Q(country__contains = country))
+        if not title and not city and country:
+            results = LinkedInJob.objects.filter(Q(posted_date = date) | Q(country__contains = country))
+        if not title and not city and not country:
+            results = LinkedInJob.objects.filter(Q(posted_date = date))
         context = {'get_jobs': results}
         return render(request, 'core_app/index.html', context)
     get_jobs =  LinkedInJob.objects.all()
